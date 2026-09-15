@@ -5,28 +5,50 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Shadowbound - Full Roster</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#090912;color:#fff;font-family:Arial,sans-serif;overflow:hidden;touch-action:none}
+*{box-sizing:border-box}
+body{margin:0;background:#090912;color:#fff;font-family:Arial,sans-serif;overflow:hidden;touch-action:none}
 #game{display:block;width:100vw;height:100vh;background:linear-gradient(#111124,#07070d)}
 #hud{position:fixed;top:12px;left:0;right:0;display:flex;gap:12px;justify-content:space-between;padding:0 14px;pointer-events:none;z-index:10}
-.panel{width:42%;text-shadow:0 2px 3px #000}.name{font-weight:800;font-size:14px;margin-bottom:5px}.bar{height:18px;border:2px solid #fff;border-radius:10px;overflow:hidden;background:#252535}.hp{height:100%;background:#65e66b;width:100%;transition:width .15s}.enemy .hp{background:#ff5964}
-.special-bar{height:14px;border:2px solid #b85cff;border-radius:8px;overflow:hidden;background:#252535;margin-top:4px}.special-fill{height:100%;background:#b85cff;width:0%;transition:width .1s}
+.panel{width:42%;text-shadow:0 2px 3px #000}
+.name{font-weight:800;font-size:14px;margin-bottom:5px}
+.bar{height:18px;border:2px solid #fff;border-radius:10px;overflow:hidden;background:#252535}
+.hp{height:100%;background:#65e66b;width:100%;transition:width .15s}
+.enemy .hp{background:#ff5964}
+.special-bar{height:14px;border:2px solid #b85cff;border-radius:8px;overflow:hidden;background:#252535;margin-top:4px}
+.special-fill{height:100%;background:#b85cff;width:0%;transition:width .1s}
 #center{position:fixed;top:55px;left:0;right:0;text-align:center;font-weight:800;font-size:15px;pointer-events:none;z-index:10}
 #controls{position:fixed;bottom:18px;left:0;right:0;display:flex;justify-content:space-between;align-items:end;padding:0 18px;z-index:10}
-.cluster{display:flex;gap:10px}.btn{width:58px;height:58px;border-radius:50%;border:2px solid #777;background:#171727;color:#fff;font-weight:800;font-size:13px;box-shadow:0 4px 12px #0008;cursor:pointer}.btn:active{transform:scale(.94);background:#292944}.attack{width:68px;height:68px;background:#27152b}.special{width:76px;height:76px;background:#2b1736;border-color:#b85cff}
+.cluster{display:flex;gap:10px}
+.btn{width:58px;height:58px;border-radius:50%;border:2px solid #777;background:#171727;color:#fff;font-weight:800;font-size:13px;box-shadow:0 4px 12px #0008;cursor:pointer}
+.btn:active{transform:scale(.94);background:#292944}
+.attack{width:68px;height:68px;background:#27152b}
+.special{width:76px;height:76px;background:#2b1736;border-color:#b85cff}
 #start,#win{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#07070ddd;text-align:center;z-index:50;pointer-events:auto;overflow-y:auto}
-#start *,#win *{pointer-events:auto}.card{padding:28px;max-width:520px}.title{font-size:40px;font-weight:900;letter-spacing:3px}.sub{opacity:.8;margin:10px 0 22px}.startbtn{padding:14px 24px;border:0;border-radius:12px;background:#8f42ff;color:#fff;font-size:17px;font-weight:800;cursor:pointer;margin:6px}
-.fighter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:8px;margin:12px 0 16px}.fighter-btn{padding:12px;border:2px solid #666;border-radius:8px;background:#1a1a2e;color:#fff;cursor:pointer;font-size:12px;font-weight:800;transition:all .2s}.fighter-btn:hover{border-color:#8f42ff;background:#2a2a4e}.fighter-btn.selected{border-color:#8f42ff;background:#8f42ff;color:#fff}
-#win{display:none}.hint{font-size:12px;opacity:.7;margin-top:14px}
+#start{display:flex !important}
+#win{display:none}
+#start *,#win *{pointer-events:auto}
+.card{padding:28px;max-width:600px;background:#1a1a2e;border-radius:16px;border:2px solid #8f42ff}
+.title{font-size:40px;font-weight:900;letter-spacing:3px}
+.sub{opacity:.8;margin:10px 0 22px}
+.startbtn{padding:14px 24px;border:0;border-radius:12px;background:#8f42ff;color:#fff;font-size:17px;font-weight:800;cursor:pointer;margin:6px;transition:all .2s}
+.startbtn:hover{background:#a855ff;transform:scale(1.05)}
+.startbtn:active{transform:scale(0.95)}
+.fighter-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 16px}
+.fighter-btn{padding:12px;border:2px solid #666;border-radius:8px;background:#1a1a2e;color:#fff;cursor:pointer;font-size:11px;font-weight:800;transition:all .2s}
+.fighter-btn:hover{border-color:#8f42ff;background:#2a2a4e;transform:scale(1.05)}
+.fighter-btn.selected{border-color:#8f42ff;background:#8f42ff;color:#fff}
+.difficulty{padding:12px 16px !important;margin:4px !important}
+.hint{font-size:12px;opacity:.7;margin-top:14px}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="hud">
+<div id="hud" style="display:none">
   <div class="panel"><div class="name" id="pName">VEX</div><div class="bar"><div id="pHp" class="hp"></div></div><div class="special-bar"><div id="pSpecial" class="special-fill"></div></div></div>
   <div class="panel enemy"><div class="name" style="text-align:right" id="eName">STRIKER</div><div class="bar"><div id="eHp" class="hp"></div></div><div class="special-bar"><div id="eSpecial" class="special-fill"></div></div></div>
 </div>
-<div id="center"><span id="matchText">Vex vs Striker</span></div>
-<div id="controls">
+<div id="center" style="display:none"><span id="matchText">Vex vs Striker</span></div>
+<div id="controls" style="display:none">
  <div class="cluster">
   <button class="btn" id="left">◀</button><button class="btn" id="right">▶</button><button class="btn" id="jump">▲</button>
  </div>
@@ -34,30 +56,47 @@
   <button class="btn attack" id="attack">PUNCH</button><button class="btn special" id="special">SPECIAL</button>
  </div>
 </div>
-<div id="start"><div class="card"><div class="title">SHADOWBOUND</div><div class="sub">Full Roster - Choose Your Fighter</div>
-<div style="margin:12px 0 8px;font-weight:800">SELECT YOUR FIGHTER</div>
-<div class="fighter-grid" id="fighterSelect"></div>
-<div style="margin:10px 0 8px;font-weight:800">DIFFICULTY</div>
-<div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px">
- <button class="startbtn difficulty" data-diff="easy">EASY</button>
- <button class="startbtn difficulty" data-diff="normal">NORMAL</button>
- <button class="startbtn difficulty" data-diff="hard">HARD</button>
+
+<div id="start">
+  <div class="card">
+    <div class="title">SHADOWBOUND</div>
+    <div class="sub">Full Roster - Choose Your Fighter</div>
+    
+    <div style="margin:12px 0 8px;font-weight:800;text-align:left">SELECT YOUR FIGHTER</div>
+    <div class="fighter-grid" id="fighterSelect"></div>
+    
+    <div style="margin:12px 0 8px;font-weight:800;text-align:left">DIFFICULTY</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap">
+      <button class="startbtn difficulty" data-diff="easy">EASY</button>
+      <button class="startbtn difficulty" data-diff="normal">NORMAL</button>
+      <button class="startbtn difficulty" data-diff="hard">HARD</button>
+    </div>
+    
+    <button class="startbtn" id="startBtn" style="width:100%;padding:16px;font-size:20px">START FIGHT</button>
+    <div class="hint">Move + attack together. Jump to kick or clear your opponent. Hold BLOCK to defend.</div>
+  </div>
 </div>
-<button class="startbtn" id="startBtn">START FIGHT</button>
-<div class="hint">Move + attack together. Jump to kick or clear your opponent. Hold BLOCK to defend.</div></div></div>
-<div id="win"><div class="card"><div class="title" id="result">VICTORY</div><div id="resultText"></div><button class="startbtn" id="again">PLAY AGAIN</button></div></div>
+
+<div id="win">
+  <div class="card">
+    <div class="title" id="result">VICTORY</div>
+    <div id="resultText" style="font-size:18px;margin:16px 0"></div>
+    <button class="startbtn" id="again" style="width:100%;padding:16px;font-size:20px">PLAY AGAIN</button>
+  </div>
+</div>
+
 <script>
 const FIGHTERS={
- vex:{name:'VEX',color:'#6330c8',enemyColor:'#9d263b',hp:100,speed:.52,aggro:1,dmg:7,reaction:25,special:{name:'SHADOW STRIKE',dmg:30,range:180,desc:'Devastating shadow projectile'}},
- striker:{name:'STRIKER',color:'#9d263b',enemyColor:'#9d263b',hp:100,speed:.52,aggro:1,dmg:7,reaction:25,special:{name:'POWER SLAM',dmg:30,range:180,desc:'Crush your opponent'}},
- nova:{name:'NOVA',color:'#ff6b35',enemyColor:'#ff6b35',hp:95,speed:.68,aggro:1.1,dmg:8,reaction:22,special:{name:'INFERNO BURST',dmg:35,range:200,desc:'Explosive fire nova'}},
- frost:{name:'FROST',color:'#00bfff',enemyColor:'#00bfff',hp:105,speed:.45,aggro:.8,dmg:6,reaction:28,special:{name:'GLACIAL SPIKE',dmg:25,range:150,desc:'Freeze and pierce'}},
- apex:{name:'APEX',color:'#00ff00',enemyColor:'#00ff00',hp:110,speed:.50,aggro:.9,dmg:7,reaction:26,special:{name:'PRIMAL ROAR',dmg:28,range:220,desc:'Untamed beast fury'}},
- phantom:{name:'PHANTOM',color:'#9d4edd',enemyColor:'#9d4edd',hp:90,speed:.75,aggro:1.2,dmg:8,reaction:20,special:{name:'VOID STEP',dmg:32,range:190,desc:'Teleport strike combo'}},
- titan:{name:'TITAN',color:'#ff6b6b',enemyColor:'#ff6b6b',hp:120,speed:.40,aggro:.75,dmg:9,reaction:30,special:{name:'GROUND SMASH',dmg:38,range:200,desc:'Devastating ground attack'}},
- wraith:{name:'WRAITH',color:'#a0aec0',enemyColor:'#a0aec0',hp:92,speed:.70,aggro:1.15,dmg:8,reaction:21,special:{name:'DEATH MARK',dmg:34,range:170,desc:'Soul-piercing strike'}},
- cipher:{name:'CIPHER',color:'#667eea',enemyColor:'#667eea',hp:98,speed:.55,aggro:1.05,dmg:7,reaction:24,special:{name:'LOGIC CHAIN',dmg:29,range:180,desc:'Calculated perfect strike'}},
- inferno:{name:'INFERNO',color:'#ff2d2d',enemyColor:'#ff2d2d',hp:88,speed:.80,aggro:1.3,dmg:9,reaction:19,special:{name:'HELLFIRE',dmg:40,range:210,desc:'Maximum heat attack'}}
+ vex:{name:'VEX',color:'#6330c8',enemyColor:'#9d263b',hp:100,maxHp:100,speed:.52,aggro:1,dmg:7,reaction:25,special:{name:'SHADOW STRIKE',dmg:30,range:180,desc:'Devastating shadow projectile'}},
+ striker:{name:'STRIKER',color:'#9d263b',enemyColor:'#9d263b',hp:100,maxHp:100,speed:.52,aggro:1,dmg:7,reaction:25,special:{name:'POWER SLAM',dmg:30,range:180,desc:'Crush your opponent'}},
+ nova:{name:'NOVA',color:'#ff6b35',enemyColor:'#ff6b35',hp:95,maxHp:95,speed:.68,aggro:1.1,dmg:8,reaction:22,special:{name:'INFERNO BURST',dmg:35,range:200,desc:'Explosive fire nova'}},
+ frost:{name:'FROST',color:'#00bfff',enemyColor:'#00bfff',hp:105,maxHp:105,speed:.45,aggro:.8,dmg:6,reaction:28,special:{name:'GLACIAL SPIKE',dmg:25,range:150,desc:'Freeze and pierce'}},
+ apex:{name:'APEX',color:'#00ff00',enemyColor:'#00ff00',hp:110,maxHp:110,speed:.50,aggro:.9,dmg:7,reaction:26,special:{name:'PRIMAL ROAR',dmg:28,range:220,desc:'Untamed beast fury'}},
+ phantom:{name:'PHANTOM',color:'#9d4edd',enemyColor:'#9d4edd',hp:90,maxHp:90,speed:.75,aggro:1.2,dmg:8,reaction:20,special:{name:'VOID STEP',dmg:32,range:190,desc:'Teleport strike combo'}},
+ titan:{name:'TITAN',color:'#ff6b6b',enemyColor:'#ff6b6b',hp:120,maxHp:120,speed:.40,aggro:.75,dmg:9,reaction:30,special:{name:'GROUND SMASH',dmg:38,range:200,desc:'Devastating ground attack'}},
+ wraith:{name:'WRAITH',color:'#a0aec0',enemyColor:'#a0aec0',hp:92,maxHp:92,speed:.70,aggro:1.15,dmg:8,reaction:21,special:{name:'DEATH MARK',dmg:34,range:170,desc:'Soul-piercing strike'}},
+ cipher:{name:'CIPHER',color:'#667eea',enemyColor:'#667eea',hp:98,maxHp:98,speed:.55,aggro:1.05,dmg:7,reaction:24,special:{name:'LOGIC CHAIN',dmg:29,range:180,desc:'Calculated perfect strike'}},
+ inferno:{name:'INFERNO',color:'#ff2d2d',enemyColor:'#ff2d2d',hp:88,maxHp:88,speed:.80,aggro:1.3,dmg:9,reaction:19,special:{name:'HELLFIRE',dmg:40,range:210,desc:'Maximum heat attack'}}
 };
 
 const c=document.getElementById('game'),ctx=c.getContext('2d');
@@ -65,14 +104,13 @@ function resize(){c.width=innerWidth*devicePixelRatio;c.height=innerHeight*devic
 addEventListener('resize',resize);resize();
 
 let running=false,last=0,keys={},particles=[],shake=0,chosen='vex',opponent='striker',difficulty='normal';
-
 let p,e;
 const ground=()=>innerHeight-125;
 
 function makeFighter(x,face,fighterId){
  const f=FIGHTERS[fighterId];
- return {x,y:ground(),vx:0,vy:0,hp:f.hp,maxHp:f.hp,face,attack:0,special:0,stun:0,
-         block:false,on:true,jumpKick:false,kickTimer:0,fighterId,...f};
+ return {x,y:ground(),vx:0,vy:0,hp:f.hp,maxHp:f.maxHp,face,attack:0,special:0,stun:0,
+         block:false,on:true,jumpKick:false,kickTimer:0,fighterId,name:f.name,color:f.color,enemyColor:f.enemyColor,speed:f.speed,aggro:f.aggro,dmg:f.dmg,reaction:f.reaction,special_ability:f.special};
 }
 
 function reset(){
@@ -106,7 +144,7 @@ function doAttack(){
 function doSpecial(){
  if(!running||p.stun>0||p.special<100)return;
  p.special=0;p.attack=30;
- setTimeout(()=>{if(running&&Math.abs(p.x-e.x)<p.special.range&&Math.abs(p.y-e.y)<95)hit(p,e,p.special.dmg,7)},150);
+ setTimeout(()=>{if(running&&Math.abs(p.x-e.x)<p.special_ability.range&&Math.abs(p.y-e.y)<95)hit(p,e,p.special_ability.dmg,7)},150);
  burst(p.x+p.face*40,p.y-55,28,p.color);
 }
 
@@ -173,8 +211,8 @@ function update(dt){
    document.getElementById('resultText').textContent=e.hp<=0?p.name+' WINS!':e.name+' WINS!';
    document.getElementById('win').style.display='flex';
  }
- document.getElementById('pHp').style.width=p.hp+'%';
- document.getElementById('eHp').style.width=e.hp+'%';
+ document.getElementById('pHp').style.width=(p.hp/p.maxHp*100)+'%';
+ document.getElementById('eHp').style.width=(e.hp/e.maxHp*100)+'%';
  document.getElementById('pSpecial').style.width=p.special+'%';
  document.getElementById('eSpecial').style.width=e.special+'%';
 }
@@ -235,7 +273,7 @@ function draw(){
  ctx.fillStyle='#101022';ctx.fillRect(0,ground()+5,innerWidth,120);
  ctx.strokeStyle='#33334c';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,ground()+5);ctx.lineTo(innerWidth,ground()+5);ctx.stroke();
  for(let x=0;x<innerWidth;x+=70){ctx.strokeStyle='#17172a';ctx.beginPath();ctx.moveTo(x,ground()+5);ctx.lineTo(x+35,innerHeight);ctx.stroke();}
- drawFighter(p,p.name);drawFighter(e,e.name,true);
+ if(running){drawFighter(p,p.name);drawFighter(e,e.name,true);}
  particles.forEach(q=>{ctx.globalAlpha=Math.max(0,q.life/40);ctx.fillStyle=q.color;ctx.fillRect(q.x,q.y,4,4);q.x+=q.vx;q.y+=q.vy;q.vy+=.25;q.life--;});
  ctx.globalAlpha=1;particles=particles.filter(q=>q.life>0);ctx.restore();
 }
@@ -245,15 +283,20 @@ requestAnimationFrame(loop);
 
 function bind(id,prop){
  const b=document.getElementById(id);
+ if(!b)return;
  ['pointerdown','touchstart'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();keys[prop]=true;}));
  ['pointerup','pointercancel','pointerleave','touchend'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();keys[prop]=false;}));
 }
 bind('left','left');bind('right','right');bind('block','block');
 
-document.getElementById('jump').addEventListener('pointerdown',e=>{e.preventDefault();doJump();});
-document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();doAttack();});
-document.getElementById('special').addEventListener('pointerdown',e=>{e.preventDefault();doSpecial();});
+const jumpBtn=document.getElementById('jump');
+const attackBtn=document.getElementById('attack');
+const specialBtn=document.getElementById('special');
+if(jumpBtn)jumpBtn.addEventListener('pointerdown',e=>{e.preventDefault();doJump();});
+if(attackBtn)attackBtn.addEventListener('pointerdown',e=>{e.preventDefault();doAttack();});
+if(specialBtn)specialBtn.addEventListener('pointerdown',e=>{e.preventDefault();doSpecial();});
 
+// Setup fighter selection
 const fighterGrid=document.getElementById('fighterSelect');
 Object.keys(FIGHTERS).forEach(fighterId=>{
  const btn=document.createElement('button');
@@ -262,31 +305,45 @@ Object.keys(FIGHTERS).forEach(fighterId=>{
  btn.dataset.fighter=fighterId;
  btn.style.borderColor=FIGHTERS[fighterId].color;
  if(fighterId===chosen)btn.classList.add('selected');
- btn.addEventListener('click',()=>{
+ btn.addEventListener('click',function(){
    chosen=fighterId;
    document.querySelectorAll('.fighter-btn').forEach(b=>b.classList.remove('selected'));
-   btn.classList.add('selected');
+   this.classList.add('selected');
  });
  fighterGrid.appendChild(btn);
 });
 
-document.querySelectorAll('.difficulty').forEach(b=>b.addEventListener('click',()=>{
- difficulty=b.dataset.diff;
+// Difficulty selection
+document.querySelectorAll('.difficulty').forEach(b=>b.addEventListener('click',function(){
+ difficulty=this.dataset.diff;
  document.querySelectorAll('.difficulty').forEach(x=>x.style.opacity='.65');
- b.style.opacity='1';
+ this.style.opacity='1';
 }));
 document.querySelectorAll('.difficulty').forEach(x=>x.style.opacity='.65');
-document.querySelector('[data-diff="normal"]').style.opacity='1';
+const normalBtn=document.querySelector('[data-diff="normal"]');
+if(normalBtn)normalBtn.style.opacity='1';
 
+// Start game
 function startGame(){
  opponent=Object.keys(FIGHTERS)[Math.floor(Math.random()*Object.keys(FIGHTERS).length)];
  reset();
- running=true;document.getElementById('start').style.display='none';
+ running=true;
+ document.getElementById('start').style.display='none';
+ document.getElementById('hud').style.display='flex';
+ document.getElementById('center').style.display='block';
+ document.getElementById('controls').style.display='flex';
 }
 
-document.getElementById('startBtn').addEventListener('click',startGame);
-document.getElementById('again').onclick=()=>{startGame();document.getElementById('win').style.display='none';};
+const startBtn=document.getElementById('startBtn');
+if(startBtn)startBtn.addEventListener('click',startGame);
 
+const againBtn=document.getElementById('again');
+if(againBtn)againBtn.addEventListener('click',function(){
+ startGame();
+ document.getElementById('win').style.display='none';
+});
+
+// Keyboard controls
 addEventListener('keydown',ev=>{
  if(ev.key==='ArrowLeft')keys.left=true;
  if(ev.key==='ArrowRight')keys.right=true;
