@@ -12,10 +12,12 @@ canvas{display:block;width:100%;height:100%}
 #start-menu{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #8f42ff;border-radius:12px;padding:30px;width:90%;max-width:500px;text-align:center;z-index:200;pointer-events:auto}
 #start-menu h1{font-size:36px;margin:0 0 10px 0;color:#fff}
 #start-menu p{margin:5px 0;font-size:14px;opacity:.8}
-.fighter-list{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:20px 0}
+.fighter-list{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:20px 0;max-height:150px;overflow-y:auto}
 .fighter-btn{padding:10px;background:#2a2a4e;border:2px solid #666;color:#fff;cursor:pointer;border-radius:6px;font-weight:bold;font-size:11px;transition:all .2s}
 .fighter-btn:hover{background:#3a3a5e;border-color:#8f42ff}
 .fighter-btn.active{background:#8f42ff;border-color:#8f42ff}
+.fighter-btn.pete{border-color:#ff1744}
+.fighter-btn.pete.active{background:#ff1744}
 .diff-list{display:flex;gap:10px;justify-content:center;margin:15px 0}
 .diff-btn{padding:10px 16px;background:#8f42ff;border:0;color:#fff;cursor:pointer;border-radius:6px;font-weight:bold;transition:all .2s}
 .diff-btn:hover{background:#a855ff}
@@ -26,6 +28,7 @@ canvas{display:block;width:100%;height:100%}
 .hp-bar{width:200px;height:20px;background:#2a2a2a;border:2px solid #fff;border-radius:4px;overflow:hidden;margin-top:5px}
 .hp-fill{height:100%;background:#00ff00;width:100%;transition:width .2s}
 .sp-fill{background:#b85cff}
+.crisis-bar{background:#ff1744}
 #win-screen{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a2e;border:3px solid #8f42ff;border-radius:12px;padding:30px;width:90%;max-width:400px;text-align:center;z-index:200;pointer-events:auto;display:none}
 #win-screen h1{font-size:40px;margin:0}
 #replay-btn{width:100%;padding:16px;background:#8f42ff;border:0;color:#fff;font-size:18px;font-weight:bold;cursor:pointer;border-radius:6px;margin-top:15px}
@@ -52,11 +55,13 @@ canvas{display:block;width:100%;height:100%}
       <div id="p-name">PLAYER</div>
       <div class="hp-bar"><div id="p-hp" class="hp-fill"></div></div>
       <div class="hp-bar"><div id="p-sp" class="hp-fill sp-fill"></div></div>
+      <div id="p-crisis" style="display:none;margin-top:3px">CRISIS: <span id="p-crisis-val">0</span>%</div>
     </div>
     <div style="text-align:right">
       <div id="e-name">ENEMY</div>
       <div class="hp-bar"><div id="e-hp" class="hp-fill"></div></div>
       <div class="hp-bar"><div id="e-sp" class="hp-fill sp-fill"></div></div>
+      <div id="e-crisis" style="display:none;margin-top:3px">CRISIS: <span id="e-crisis-val">0</span>%</div>
     </div>
   </div>
   
@@ -79,7 +84,8 @@ const FIGHTERS={
   titan:{name:'TITAN',color:'#ff6b6b',hp:120,speed:.40,dmg:9},
   wraith:{name:'WRAITH',color:'#a0aec0',hp:92,speed:.70,dmg:8},
   cipher:{name:'CIPHER',color:'#667eea',hp:98,speed:.55,dmg:7},
-  inferno:{name:'INFERNO',color:'#ff2d2d',hp:88,speed:.80,dmg:9}
+  inferno:{name:'INFERNO',color:'#ff2d2d',hp:88,speed:.80,dmg:9},
+  peteb:{name:'PETE B',color:'#ff1744',hp:130,speed:.60,dmg:10,isCrisis:true,crisisMultiplier:1.5}
 };
 
 // SETUP
@@ -114,13 +120,34 @@ class Fighter{
     this.stun=0;
     this.onGround=true;
     this.isEnemy=isEnemy;
+    this.isCrisis=data.isCrisis||false;
+    this.crisisMode=0;
+    this.crisisMultiplier=data.crisisMultiplier||1;
+    this.battleTime=0;
   }
   
   draw(){
     ctx.save();
     ctx.translate(this.x,this.y);
+    
+    // Crisis glow
+    if(this.crisisMode>50){
+      ctx.shadowColor=this.color;
+      ctx.shadowBlur=20;
+    }
+    
     ctx.fillStyle=this.color;
     ctx.fillRect(-15,-40,30,40);
+    
+    // Crisis visual
+    if(this.crisisMode>30){
+      ctx.strokeStyle=this.color;
+      ctx.lineWidth=3;
+      ctx.globalAlpha=this.crisisMode/100;
+      ctx.strokeRect(-20,-45,40,50);
+    }
+    
+    ctx.globalAlpha=1;
     ctx.fillStyle='#fff';
     ctx.font='10px Arial';
     ctx.textAlign='center';
@@ -143,6 +170,19 @@ class Fighter{
     if(this.attack>0)this.attack--;
     this.special=Math.min(100,this.special+0.08);
     
+    // PETE B CRISIS MECHANICS
+    if(this.isCrisis){
+      this.battleTime++;
+      // Crisis builds over time
+      this.crisisMode=Math.min(100,this.battleTime*0.15);
+      // When crisis is full, activate it
+      if(this.crisisMode>=100){
+        this.crisisMode=100;
+        this.speed*=1.01;
+        this.dmg*=1.01;
+      }
+    }
+    
     this.x=Math.max(20,Math.min(canvas.width-20,this.x));
   }
 }
@@ -163,7 +203,7 @@ function burst(x,y,color){
 }
 
 function startGame(){
-  const oppName=Object.keys(FIGHTERS)[Math.floor(Math.random()*10)];
+  const oppName=Object.keys(FIGHTERS)[Math.floor(Math.random()*11)];
   player=new Fighter(100,chosenFighter);
   enemy=new Fighter(canvas.width-100,oppName,true);
   particles=[];
@@ -171,6 +211,10 @@ function startGame(){
   document.getElementById('start-menu').style.display='none';
   document.getElementById('hud').style.display='flex';
   document.getElementById('win-screen').style.display='none';
+  
+  // Show crisis bars if applicable
+  if(player.isCrisis)document.getElementById('p-crisis').style.display='block';
+  if(enemy.isCrisis)document.getElementById('e-crisis').style.display='block';
 }
 
 function gameOver(won){
@@ -191,43 +235,60 @@ function update(){
     if(keys.left)player.x-=player.speed*2;
     if(keys.right)player.x+=player.speed*2;
     if(keys.jump&&player.onGround){player.vy=-12;player.onGround=false;keys.jump=false}
-    if(keys.attack&&!player.attack){player.attack=20;shake=3}
-  }
-  
-  let dx=enemy.x-player.x;
-  if(Math.abs(dx)<120&&Math.abs(player.y-enemy.y)<80){
-    if(player.attack>0){
-      enemy.hp-=player.dmg;
-      enemy.stun=8;
-      burst(enemy.x,enemy.y,player.color);
-      gameRunning&&(enemy.hp<=0)&&gameOver(true);
+    if(keys.attack&&!player.attack){
+      let dmg=player.dmg;
+      if(player.isCrisis&&player.crisisMode>=100)dmg*=player.crisisMultiplier;
+      player.attack=20;
+      shake=3;
+      
+      let dx=enemy.x-player.x;
+      if(Math.abs(dx)<120&&Math.abs(player.y-enemy.y)<80){
+        enemy.hp-=dmg;
+        enemy.stun=8;
+        burst(enemy.x,enemy.y,player.color);
+        gameRunning&&(enemy.hp<=0)&&gameOver(true);
+      }
     }
   }
   
   if(enemy.stun<=0&&Math.random()<0.02){
-    enemy.x+=(dx>0?1:-1)*enemy.speed*2;
+    let targetX=player.x;
+    if(enemy.isCrisis&&enemy.crisisMode>=100){
+      // PETE B CRISIS MODE - more aggressive
+      targetX=player.x+(Math.random()-0.5)*50;
+    }
+    enemy.x+=(targetX>enemy.x?1:-1)*enemy.speed*2;
+    
     if(Math.random()<0.1&&enemy.onGround){enemy.vy=-12;enemy.onGround=false}
-    if(Math.random()<0.03&&!enemy.attack){enemy.attack=20}
-  }
-  
-  if(enemy.attack>0){
-    let edx=player.x-enemy.x;
-    if(Math.abs(edx)<120&&Math.abs(player.y-enemy.y)<80){
-      player.hp-=enemy.dmg;
-      player.stun=8;
-      burst(player.x,player.y,enemy.color);
-      gameRunning&&(player.hp<=0)&&gameOver(false);
+    if(Math.random()<0.03&&!enemy.attack){
+      enemy.attack=20;
+      
+      let edx=player.x-enemy.x;
+      if(Math.abs(edx)<120&&Math.abs(player.y-enemy.y)<80){
+        let dmg=enemy.dmg;
+        if(enemy.isCrisis&&enemy.crisisMode>=100)dmg*=enemy.crisisMultiplier;
+        player.hp-=dmg;
+        player.stun=8;
+        burst(player.x,player.y,enemy.color);
+        gameRunning&&(player.hp<=0)&&gameOver(false);
+      }
     }
   }
   
   particles=particles.filter(p=>{p.update();return p.life>0});
   
-  document.getElementById('p-hp').style.width=(player.hp/player.maxHp*100)+'%';
-  document.getElementById('e-hp').style.width=(enemy.hp/FIGHTERS[enemy.name].hp*100)+'%';
+  const maxPlayerHp=FIGHTERS[player.name].hp;
+  const maxEnemyHp=FIGHTERS[enemy.name].hp;
+  
+  document.getElementById('p-hp').style.width=(player.hp/maxPlayerHp*100)+'%';
+  document.getElementById('e-hp').style.width=(enemy.hp/maxEnemyHp*100)+'%';
   document.getElementById('p-sp').style.width=player.special+'%';
   document.getElementById('e-sp').style.width=enemy.special+'%';
   document.getElementById('p-name').textContent=player.displayName;
   document.getElementById('e-name').textContent=enemy.displayName;
+  
+  if(player.isCrisis)document.getElementById('p-crisis-val').textContent=Math.floor(player.crisisMode);
+  if(enemy.isCrisis)document.getElementById('e-crisis-val').textContent=Math.floor(enemy.crisisMode);
 }
 
 function draw(){
@@ -255,8 +316,9 @@ gameLoop();
 // UI SETUP
 Object.keys(FIGHTERS).forEach(key=>{
   const btn=document.createElement('button');
-  btn.className='fighter-btn'+(key==='vex'?' active':'');
-  btn.textContent=FIGHTERS[key].name;
+  const isPete=key==='peteb';
+  btn.className='fighter-btn'+(isPete?' pete':'')+(key==='vex'?' active':'');
+  btn.textContent=FIGHTERS[key].name+(isPete?' 🥊':'');
   btn.onclick=function(){
     document.querySelectorAll('.fighter-btn').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
